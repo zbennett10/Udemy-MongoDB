@@ -6,7 +6,7 @@ describe('update records within the database', () => {
     beforeEach((done) => {
         joe = new User({
             name: 'Joe',
-            postCount: 0
+            likes: 0
         });
         joe.save().then(() => done());
     })
@@ -52,12 +52,12 @@ describe('update records within the database', () => {
 
     it('user can have post count incremented by one', (done) => {
         //mongo update operator - $inc
-        User.update({name: 'Joe'}, {$inc: {postCount: 1}})
-            .then(() => User.find({name: 'Joe'}))
+        User.update({name: 'Joe'}, {$inc: {likes: 10}})
+            .then(() => User.findOne({name: 'Joe'}))
             .then((user) => {
-                assert(user.postCount === 1);
+                assert(user.likes === 10);
+                done();
             });
-            done();
     });
 
 });
