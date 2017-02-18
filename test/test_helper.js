@@ -17,8 +17,12 @@ before((done) => {
 
 //will run before each test statement
 beforeEach((done) => {
-    mongoose.connection.collections.users.drop(() => {
-        //ready to run next test
-        done(); //users have been dropped - mocha's call to continue
-    }); //delete every use in database
+    const {users, comments, blogposts } = mongoose.connection.collections;
+    users.drop(() => {
+        comments.drop(() => {
+            blogposts.drop(() => {
+                done();
+            });
+        })
+    });
 });

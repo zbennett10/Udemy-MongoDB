@@ -14,7 +14,7 @@ const UserSchema = new Schema({
     posts: [PostSchema],
     likes: Number,
     blogPosts: [{
-        type: Schema.Types.ObjectID, //refer to BlogPost model
+        type: Schema.Types.ObjectId, //refer to BlogPost model
         ref: 'blogPost'
     }]
 });
@@ -22,6 +22,15 @@ const UserSchema = new Schema({
 //virtual fields
 UserSchema.virtual('postCount').get(function() {
     return this.posts.length;
+});
+
+//user middleware
+UserSchema.pre('remove', function(next) {
+    const BlogPost = mongoose.model('blogPost'); //avoid cyclical require
+    //clean up user's blogposts and comments
+    // this === whichever user is being removed
+    BlogPost.remove({ _id: {$in: this.blogPosts }}) //remove every blogpost associated with this user
+        .then(() => next());
 });
 
 const User = mongoose.model('user', UserSchema); //initialize collection and Class based on UserSchema
